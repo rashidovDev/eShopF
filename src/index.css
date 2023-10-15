@@ -1,3 +1,37 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600;700&display=swap');
+
+body{
+  font-family: 'Montserrat', sans-serif;
+  font-family: 'Open Sans', sans-serif;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.ff{
+    border: 0;
+    outline: 0;
+    border-bottom: 2px solid #999;
+  }
+
+  /* SIDEBAR */
+
+  .sidebar-left-margin {
+    transition: margin-left 500ms ease-in-out;
+    margin-left: -300px;
+  }
+
+  .sidebar-right-margin {
+    transition: margin-left 500ms ease-in-out;
+    margin: 0;
+  }
+
+  /* LOADER */
+
+  .loader{
+     position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+  }
