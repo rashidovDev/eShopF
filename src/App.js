@@ -4,13 +4,16 @@ import Home from './components/Admin/Home'
 import Order from './components/Admin/Orders/Order'
 import { AdminPrivateRoute } from './components/Admin/private'
 import User from './components/Admin/Users/User'
+import UserAddUpdate from './components/Admin/Users/UserAddUpdate'
 import Product from "./components/Admin/Products/Product"
+import ProductAddUpdate from "./components/Admin/Products/ProductAddUpdate"
 import Login from "./Login"
 
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Oval } from 'react-loader-spinner'
 import { useSelector } from 'react-redux'
+import Modal from './components/Modal/Modal'
 
 const App = () => {
 
@@ -25,7 +28,7 @@ const App = () => {
         closeOnClick={false}
       />
       {loader &&
-        <div className='loader'>
+        <div className='loader z-40'>
           <Oval
             height={70}
             width={70}
@@ -39,16 +42,21 @@ const App = () => {
             strokeWidthSecondary={2}
           />
         </div>
-      }
-
+}
       <BrowserRouter>
         <Routes>
+         
           <Route path='/admin/login' element={<Login />} />
-          <Route path="/admin/:path?/*" element={<AdminPrivateRoute />}>
-            <Route path='main' element={<Home />} />
-            <Route path='order' element={<Order />} />
-            <Route path='product' element={<Product />} />
-            <Route path='user' element={<User />} />
+          <Route path="/admin/" element={<AdminPrivateRoute />}>
+            <Route path='main' exact element={<Home />} />
+            <Route path='order' exact element={<Order />} />
+            <Route path='product' exact element={<Product />} />
+            <Route path='user' exact element={<User />} />
+
+            <Route path='user/create' exact element={<UserAddUpdate/>} />
+            <Route path='product/create' exact element={<ProductAddUpdate/>} />
+
+            <Route path='user/update/:id' exact element={<UserAddUpdate/>} />
           </Route>
         </Routes>
       </BrowserRouter>

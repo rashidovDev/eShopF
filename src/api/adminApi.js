@@ -1,90 +1,199 @@
-import { useDispatch } from 'react-redux';
+
 import { setUser } from '../store/slices/userSlice';
 import axios from "axios"
+import {store} from "../store"
 import { toast } from 'react-toastify';
 import { hideLoader, showLoader } from '../store/slices/loaderSlice';
 
 const baseURL = "http://localhost:5000/api"
 
-export const login = (email, password) => {
-    return async dispatch => {
+
+const axiosClient = axios.create({
+	baseURL: baseURL,
+	withCredentials: true,
+	headers: {
+		'Content-Type': 'application/json',
+		'accept': 'application/json',
+	},
+});
+
+export const login = async (email, password) => {
         try{
-            dispatch(showLoader())
+            store.dispatch(showLoader())
             const response = await axios.post(`${baseURL}/auth/login`, {
                 email, 
                 password
-            } )
-        
-        dispatch(setUser(response.data.user))
-        localStorage.setItem("token", response.data.token)
-        const user = await axios.get(baseURL + '/auth', 
-        { headers: {Authorization: 'Bearer ' + response.data.token} })
-        dispatch(hideLoader())
-        console.log("User",user)
-        // for (let i = 0; i < user.data.authorities.length; i++) {
-        //     if (user.data.authorities[i] === "ROLE_ADMIN") {
-        //       localStorage.setItem('admin_access_token', response.access_token)
-        //       localStorage.setItem("admin_tokenTime", JSON.stringify(new Date().getTime()));
-        //       localStorage.setItem('admin_user', JSON.stringify(data))
-        //       history.push("/admin/main");
-        //     }
-        //     if (user.data.authorities[i] === "ROLE_OPERATOR") {
-        //       data.role = "OPERATOR"
-        //       localStorage.setItem('operator_user', JSON.stringify(data))
-        //       localStorage.setItem('operator_tokenTime', JSON.stringify(new Date().getTime()))
-        //       localStorage.setItem('operator_access_token', response.access_token)
-        //       history.push("/operator/orders");
-        //     }
-        //   }
-        // console.log(response.data)
-        }catch(e){
-        console.log(e.response.data.message)
+            })  
+            store.dispatch(hideLoader())
+            return response  
+        }catch(err){
+         toast.error(err.response.data.message)
+         store.dispatch(hideLoader())
         }
+}
+
+export async function GET(URL) {
+    try{
+    store.dispatch(showLoader())
+    // await checkToken()
+	const data = await axios.get(`${baseURL}${URL}`, 
+    { headers: { Authorization: 'Bearer ' + localStorage.getItem('admin_access_token') } })
+        store.dispatch(hideLoader())
+        return data.data
+    }catch(err){
+    store.dispatch(hideLoader())
+    toast.error(err.response.data.message)
     }
 }
 
-// async function checkToken() {
-// 	var tokenTime = localStorage.getItem('admin_tokenTime');
-// 	var difference = Math.floor(((Date.now() - tokenTime) / 1000) / 60);
-// 	if (difference < 4) {
-// 		return
+export async function POST(URL, payload){
+	try{
+		store.dispatch(showLoader())
+		// await checkToken()
+		const data = await axios.post(`${baseURL}${URL}`, payload,
+		{ headers: { Authorization: 'Bearer ' + localStorage.getItem('admin_access_token') } })
+			store.dispatch(hideLoader())
+			toast.success(data.data.message)
+			return data.data
+		}catch(err){
+		store.dispatch(hideLoader())
+		toast.error(err.response.data.message)
+		}
+}
+
+export async function DELETE(URL) {
+    try{
+	const response = axios.delete(`${baseURL}${URL}`,
+	{ headers: { Authorization: 'Bearer ' + localStorage.getItem('admin_access_token') } })
+    store.dispatch(hideLoader())
+    return response.data
+	}catch(err){
+	store.dispatch(hideLoader())
+	toast.error(err.response.data.message)
+	}
+}
+
+export async function FILE(URL, payload){
+	try{
+		store.dispatch(showLoader())
+		// await checkToken()
+		const formData = new FormData()
+		formData.append('file', payload)
+		const data = await axios.post(`${baseURL}${URL}`, formData,
+		{ headers: { Authorization: 'Bearer ' + localStorage.getItem('admin_access_token') } })
+			store.dispatch(hideLoader())
+			toast.success(data.data.message)
+			return data.data
+		}catch(err){
+		store.dispatch(hideLoader())
+		toast.error(err.response.data.message)
+		}
+}
+
+export async function DELETEFILE(URL, payload){
+	try{
+		store.dispatch(showLoader())
+		// await checkToken()
+		const data = await axios.delete(`${baseURL}${URL}`,
+		{ headers: { Authorization: 'Bearer ' + localStorage.getItem('admin_access_token') } })
+			store.dispatch(hideLoader())
+			return data.data
+		}catch(err){
+		store.dispatch(hideLoader())
+		toast.error(err.response.data.message)
+		}
+}
+
+export async function PGET(URL, loader = true, payload = {}) {
+	var params = "";
+	if (Object.entries(payload).length > 0) {
+		params = getPath(payload);
+	}
+	if (loader) {
+		store.dispatch(showLoader());
+	}
+	// await checkToken()
+	const data = await axiosClient.get(`${URL}` + params, { headers: { Authorization: 'Bearer ' + localStorage.getItem('admin_access_token') } })
+    .catch(error => (error))
+	if (loader) {
+		store.dispatch(hideLoader());
+	}
+	return data
+}
+
+function getPath(payload, url) {
+	let iterations = Object.entries(payload).length;
+	var pathArr = "?";
+	if (url)
+		url.includes("?") ? pathArr = '&' : pathArr = '?'
+	for (let key in payload) {
+		if (!--iterations) {
+			pathArr += key + "=" + payload[key];
+		} else {
+			pathArr += key + "=" + payload[key] + "&";
+		}
+	}
+	return pathArr;
+}
+
+// export async function DELETE(URL, loader = true) {
+// 	// await checkToken()
+// 	if (loader) {
+// 		store.dispatch(showLoader());
+// 		const data = await axiosClient.delete(`${URL}`,
+// 			{ headers: { Authorization: 'Bearer ' + localStorage.getItem('admin_access_token') } })
+// 			.then(response => response.data).catch(error => httpStatusChecker(error));
+// 		store.dispatch(hideLoader());
+// 		return data
 // 	} else {
-// 		const user = localStorage.getItem('admin_user')
-// 		await axiosClient.post('/auth/login', user).then(response => {
-// 			localStorage.setItem('admin_access_token', response.data.access_token)
-// 			localStorage.setItem("admin_tokenTime", JSON.stringify(new Date().getTime()));
-// 		})
-// 		return
+// 		return await axiosClient.delete(`${URL}`, { headers: { Authorization: 'Bearer ' + localStorage.getItem('admin_access_token') } }).then(response => response.data).catch(error => httpStatusChecker(error));
 // 	}
 // }
 
-// function httpStatusChecker(error) {
-// 	console.log(error);
-// 	console.log(error.response.status === 401);
-// 	if (!error.response) {
-// 		toast.error("Ошибка: Нет подключение к интернету")
-// 		return;
-// 	}
-// 	if (error.response.status === 400) {
-// 		toast.error(error.response.data.message)
-// 		return;
-// 	}
-// 	if (error.response.status === 401) {
-// 		checkToken()
-// 		toast.error("Ошибка: Неверный логин или пароль")
-// 		return;
-// 	}
-// 	if (error.response.status === 404) {
-// 		toast.error("Ошибка: Не найдено")
-// 		return;
-// 	}
-// 	if (error.response.status === 415) {
-// 		toast.error("Ошибка: Не поддерживаемый тип")
-// 		return;
-// 	}
-// 	if (error.response.status === 500) {
-// 		toast.error("Системная ошибка:" + error.response.data.message)
-// 		return;
-// 	}
-// }
+
+
+async function checkToken() {
+	var tokenTime = localStorage.getItem('admin_tokenTime');
+	var difference = Math.floor(((Date.now() - tokenTime) / 1000) / 60);
+	if (difference < 4) {
+		return
+	} else {
+		const user = localStorage.getItem('admin_user')
+		await axios.post(`${baseURL}/auth/login`, user).then(response => {
+			localStorage.setItem('admin_access_token', response.data.access_token)
+			localStorage.setItem("admin_tokenTime", JSON.stringify(new Date().getTime()));
+		})
+		return
+	}
+}
+
+function httpStatusChecker(error) {
+	console.log(error);
+	console.log(error.response.status === 401);
+	if (!error.response) {
+		toast.error("Ошибка: Нет подключение к интернету")
+		return;
+	}
+	if (error.response.status === 400) {
+		toast.error(error)
+		return;
+	}
+	if (error.response.status === 401) {
+		// checkToken()
+		toast.error("Ошибка: Неверный логин или пароль")
+		return;
+	}
+	if (error.response.status === 404) {
+		toast.error("Ошибка: Не найдено")
+		return;
+	}
+	if (error.response.status === 415) {
+		toast.error("Ошибка: Не поддерживаемый тип")
+		return;
+	}
+	if (error.response.status === 500) {
+		toast.error("Системная ошибка:" + error)
+		return;
+	}
+}
 

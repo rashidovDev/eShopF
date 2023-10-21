@@ -47,7 +47,7 @@ const isAdminAuthenticated = () => {
   }
   
  export const AdminPrivateRoute = () => {
-    let token = "efnjknfekjn"
+    let token = localStorage.getItem("admin_access_token")
     return (
       token ? <SideBar> <Outlet/> </SideBar>  : <Navigate to="/admin/login" />
     )
