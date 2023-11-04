@@ -58,14 +58,15 @@ export const login = async (email, password) => {
 
 export async function GET(URL) {
     try{
-    store.dispatch(showLoader())
+    // store.dispatch(showLoader())
     // await checkToken()
 	const response = await axios.get(`${baseURL}${URL}`, 
-    { headers: { Authorization: 'Bearer ' + localStorage.getItem('admin_access_token') } })
+    { headers: { Authorization: 'Bearer ' + localStorage.getItem('admin_access_token') } }
+    )
         store.dispatch(hideLoader())
         return response.data
     }catch(err){
-    store.dispatch(hideLoader())
+    // store.dispatch(hideLoader())
     toast.error(err.response.data.message)
     }
 }

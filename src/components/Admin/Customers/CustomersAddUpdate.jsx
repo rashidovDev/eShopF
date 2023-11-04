@@ -11,7 +11,6 @@ import { FaUserCircle } from 'react-icons/fa';
 
 const UserAddUpdate = () => {
   const { id } = useParams()
-  const [user, setUser] = useState()
   const [file, setFile] = useState(null)
 
   const navigate = useNavigate()
@@ -32,11 +31,6 @@ const UserAddUpdate = () => {
     const response = await GET('/countries')
     setCountry(response)
   }
-
-  async function getUser(){
-    const currentUser = JSON.parse(localStorage.getItem("admin_user"))
-      setUser(currentUser.data.user)
-    }
 
   console.log(country)
 
@@ -82,6 +76,7 @@ const UserAddUpdate = () => {
 
   useEffect(() => {
     getData()
+         // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (

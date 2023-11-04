@@ -1,6 +1,30 @@
 import React from 'react'
 import { Navigate, Outlet} from 'react-router-dom'
 import SideBar from "./SideBar.jsx"
+import AdminAddUpdate from './Admins/AdminAddUpdate.jsx';
+import Navbar from '../Front/Navbar.jsx';
+
+
+export const AdminPrivateRoute = () => {
+  let token = localStorage.getItem("admin_access_token")
+  return (
+    token ? <SideBar> <Outlet/> </SideBar> : <Navigate to="/admin/login" />
+  )
+}
+
+export const NavbarRoute = () => {
+  return (
+     <Navbar />
+  )
+}
+
+export const OwnerPrivateRoute = () => {
+const admin = JSON.parse(localStorage.getItem("admin_user"))
+console.log("ADMIN", admin)
+return (
+ admin &&  admin.data.user.roles.includes("owner") ? <AdminAddUpdate/> : <Navigate to="/admin/admin" />
+)
+}
 
 const isAuthenticated = () => {
     const token = localStorage.getItem('access_token');
@@ -46,12 +70,7 @@ const isAdminAuthenticated = () => {
     }
   }
   
- export const AdminPrivateRoute = () => {
-    let token = localStorage.getItem("admin_access_token")
-    return (
-      token ? <SideBar> <Outlet/> </SideBar>  : <Navigate to="/admin/login" />
-    )
- }
+
 
 // export function AdminPrivateRoute({ component: Component, ...rest }) {
 //     return (

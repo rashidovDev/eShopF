@@ -24,11 +24,11 @@ const Login = () => {
        try{
         const response = await login(email, password) 
         if(response){
-            const data = await axios.get(baseURL + '/auth',
+             const data = await axios.get(baseURL + '/auth',
              { headers: { Authorization: 'Bearer ' + response.data.token }})
              dispatch(setUser(data.data.user))
              for (let i = 0; i < data.data.user.roles.length; i++) {
-                 if (data.data.user.roles[i] === "admin") {
+                 if (data.data.user.roles[i] === "admin" || data.data.user.roles[i] === "owner") {
                      localStorage.setItem('admin_access_token', response.data.token)
                      localStorage.setItem("admin_tokenTime", JSON.stringify(new Date().getTime()))
                      localStorage.setItem('admin_user', JSON.stringify(data))

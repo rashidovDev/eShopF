@@ -1,16 +1,22 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
-import { Home, Users, Briefcase,ShoppingBag, Folder, Book, Coffee, ChevronRight, ChevronDown,
-Bookmark, Menu, User, Truck, Edit, Settings, LogOut, Send } from 'react-feather';
+import { Home, Users, Briefcase,ShoppingBag, ChevronDown,
+Menu, User, Truck, Edit, Settings, LogOut, Send, XCircle, Shield } from 'react-feather';
 import { Image } from 'react-bootstrap';
 import Order from './Orders/Order';
 import Paginate from './Paginate';
+import { useDispatch, useSelector } from 'react-redux';
+import { Circle } from 'react-feather';
+import { GET } from '../../api/adminApi';
+import { logoutUser } from '../../store/slices/userSlice';
+import { hideLoader, showLoader } from '../../store/slices/loaderSlice';
 
 const Sidebar = ({ children }) => {
     const location = useLocation();
 	let navigate = useNavigate();
+	const [user, setUser] = useState()
+	const [profile, setProfile] = useState(false)
 	const [showSideBar, setShowSideBar] = useState(false)
-	const [showSettings, setShowSettings] = useState(false)
     const [menu, setMenu] = useState([
 		{
 			icon: <Home className="mr-2" size={16} />,
@@ -70,17 +76,50 @@ const Sidebar = ({ children }) => {
 				},
 			]
 		},
+		{
+			icon: <Shield className="mr-2" size={16} />,
+			name: 'Admins',
+			path: '/admin/admin',
+			show: false,
+			children: [],
+			breadrcumb: [
+				{
+					name: 'Create new Product',
+					path: '/admin/product/create'
+				},
+				{
+					name: 'Update Product',
+					path: '/admin/product/update/'
+				},
+			]
+		},
 	])
+
+	async function getUser(){
+	const currentUser = JSON.parse(localStorage.getItem("admin_user"))
+    setUser(currentUser.data.user)
+	}
+
+	useEffect(() => {
+    getUser()
+	},[])
+
+	const dispatch = useDispatch()
+
+	async function logout(){
+		dispatch(logoutUser())
+		navigate("/admin/login")
+	}
+
   return (
     <div className='flex relative'>
            
  {/* SideBar */}
  <div className={`${showSideBar ? 'sidebar-left-margin' : 'sidebar-right-margin '} 
- w-[250px]  bg-[#5C3EBA] h-screen`}> 
+ w-[250px]  bg-[#8633E0] h-screen`}> 
  {/* Logo */}
-   <div className='flex pl-5 items-center border-b-2  border-b-[#E8BC25]'>
-	  <img src={require("../../assets/logSidebar.png")} width={70} alt="" />
-	  <p className='text-[25px] text-[#E8BC25] ml-4'>AR_Shop</p>
+   <div className='flex pl-5 h-[70px] items-center justify-center border-b-2  border-b-[#fff]'>
+	  <p className='text-[25px] mt-3 text-[#fff] font-[600]'>TECH SHOP</p>
    </div>
    {/* SideBar Nav */}
    <div className='mt-8 hover:text-[#000] text-[#fff]'>
@@ -97,12 +136,52 @@ const Sidebar = ({ children }) => {
 	  }
    </div>
 </div> 
-<div className='w-screen'>
-<div className='h-[75px] bg-[#5C3EBA] text-[#fff] flex items-center justify-between px-[25px]'>
+<div className='w-screen relative'>
+<div className='h-[70px] bg-[#8633E0] text-[#fff] flex items-center justify-between px-[35px]'>
 	<div>
 	 <button onClick={() => setShowSideBar(!showSideBar)}><Menu className="mr-2" size={28} /></button>	
 		</div>
-		<button onClick={() => setShowSideBar(!showSideBar)}><User className="mr-2" size={28} /></button>	
+		<div className='w-[180px]'> 
+		{
+			user
+			     ? 
+				<div className=''>
+				<div onClick={() => setProfile(!profile)}  className='flex cursor-pointer items-center justify-center'>
+                 <img className='w-[40px] mt-2 h-[40px] object-cover rounded-full' src={`http://localhost:5000/${user.avatar}`} alt="" />
+				 <p className='mt-[20px] w-[70px] mx-2'>Hi, {user.username}</p>
+				 <div className='w-[20px] mb-1 mt-[10px]'><ChevronDown size={16}/></div>
+				</div>
+
+				{/* PROFILE */}
+				{profile && (
+                   <div className='z-50 bg-[#fff] absolute w-[220px] rounded-[10px] shadow right-10 py-3 px-2 top-[80px] text-[#8633E0]'>
+				   <div className='flex items-center justify-between'>
+					   <p className='text-[20px]'>User Profile</p>
+					   <p onClick={() => setProfile(false)}><XCircle className="mr-2 cursor-pointer" size={20} /></p>
+				   </div>
+				   <div className='flex items-center justify-between'>
+				   <img className='w-[80px] h-[80px] object-cover rounded-full' src={`http://localhost:5000/${user.avatar}`} alt="" />
+					   <div className='mt-[10px]'>
+						   <p>{user.username}</p>
+						   <p>{(user.roles[user.roles.length - 1]).toUpperCase()}</p>
+					   </div>
+				   </div>
+				   <button
+				   onClick={logout}
+                className='p-[7px] text-[#fff] w-full border-1 mt-3 bg-[#5C3EBA] 
+				flex items-center text-center justify-center rounded-[6px]'>
+                <span className='mr-[5px] '><LogOut size={16}/></span> <span> Logout </span> 
+                </button>
+				</div>
+				)}
+                 
+	        	</div>
+			     : 
+				<div className='flex justify-end'>
+					<button><User className="mr-2" size={28} /></button>			
+				</div>
+		}	
+		 </div>
 </div> 
 <div className='relative'> 
 {children}

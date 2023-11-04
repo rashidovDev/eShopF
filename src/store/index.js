@@ -10,5 +10,5 @@ export const store = configureStore({
      loader : loaderReducer,
      modal : modalReducer,
      id : idReducer
-  },
+  }
 });

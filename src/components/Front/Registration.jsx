@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from 'react'
-import { DELETEFILE, FILE, GET, POST, PUT } from '../../../api/adminApi'
+import { DELETEFILE, FILE, GET, POST, PUT } from '../../api/frontApi'
 import { XCircle, Save, Edit, User } from 'react-feather';
 import { Link, Navigate, NavLink, useNavigate, useParams } from 'react-router-dom';
 import { useForm } from "react-hook-form";
-import Modal from "../../Modal/Modal"
+import Modal from "../../components/Modal/Modal"
 import { useDispatch, useSelector } from 'react-redux'
-import { hideModal, showModal } from '../../../store/slices/modalSlice';
-import { getId } from '../../../store/slices/idSlice';
+import { hideModal, showModal } from '../../store/slices/modalSlice';
+import { getId } from '../../store/slices/idSlice';
 import { FaUserCircle } from 'react-icons/fa';
 
-const UserAddUpdate = () => {
+const Registration = () => {
   const { id } = useParams()
+
   const [user, setUser] = useState()
   const [file, setFile] = useState(null)
 
@@ -176,4 +177,4 @@ const UserAddUpdate = () => {
   )
 }
 
-export default UserAddUpdate
+export default Registration

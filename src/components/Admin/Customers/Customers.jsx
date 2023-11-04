@@ -17,6 +17,7 @@ const User = () => {
   const [page, setPage] = useState(0);
   const perPage = 7;
 
+
   async function getItems() {
     const response = await GET(`/auth/customer-list?page=${page}&limit=${perPage}&search=${search}`)
     setUser(response.paginatedItems)
@@ -48,7 +49,7 @@ async function deleteItem(id) {
 
   useEffect(() => {
         getItems()
-          
+          // eslint-disable-next-line react-hooks/exhaustive-deps
   },[page,search])
 
   return (
@@ -77,7 +78,7 @@ async function deleteItem(id) {
               <th className="text-center">Username</th>
               <th className="text-center">Email</th>
               <th className="text-center">Country</th>
-              <th className="text-center w-[120px]">Number of Purchases</th>
+              <th className="text-center">Purchases</th>
               <th className="text-center">Rating</th>
               <th className="text-center">Total purchase</th>
             </tr>
