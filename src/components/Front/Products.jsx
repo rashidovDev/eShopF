@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react'
 import { GET } from '../../api/frontApi'
 import ReactPaginate from 'react-paginate';
+import {useDispatch} from "react-redux"
+import { addItemToCart } from '../../store/slices/basketSlice';
+import Basket from './Basket';
 
 const Products = () => {
     const [category, setCategory] = useState("")
@@ -31,12 +34,17 @@ const Products = () => {
     //     setProduct(response.data)
     // }
 
+    const dispatch = useDispatch()
+
+    const addProduct = (product) => {
+       dispatch(addItemToCart(product))
+    }
 
     useEffect(() => {
         getItems()
         // getProducts()
     }, [page,search,category])
-    console.log(product)
+
     return (
         <div className='bg-[#F6F7F9] mt-5 pb-5'>
              <h1 className='text-[#8633E0] text-center pt-4'>Products</h1>
@@ -57,9 +65,9 @@ const Products = () => {
             <div className='w-[4/5] ml-5 grid-system'>
 
                 { loading ?
-                        count.map(coun => {
+                        count.map((coun, idx )=> {
                             return (
-                                <div className='bg-[#fff] shadow mb-4 w-[220px] mr-3 p-3 hover:translate-y-3 ease-in duration-300'>
+                                <div key={idx + 1} className='bg-[#fff] shadow mb-4 w-[220px] mr-3 p-3 hover:translate-y-3 ease-in duration-300'>
                                 <img className='mt-2 mb-3 h-[150px] w-screen skeleton '  alt="" />
                                 <h5 className='skeleton skeleton-title h-[20px]'></h5>
                                 <p className='py-1 skeleton skeleton-description h-[20px]'></p>
@@ -80,17 +88,21 @@ const Products = () => {
                     product.length > 0 ? product.map((prod, idx)=> {
                         return(
                             <div key={idx + 1} onMouseMove={() => setIsButton(prod._id)} onMouseLeave={() => setIsButton('')}
-                            className='bg-[#fff] shadow mb-4 w-[220px] mr-3 p-3 hover:translate-y-3 ease-in duration-300'>
+                            className='bg-[#fff]  shadow mb-4 w-[220px] mr-3 p-3 hover:translate-y-3 ease-in duration-300'>
                             <img className='mt-2 ml-3 h-[150px]' src={`http://localhost:5000/${prod.image}`} alt="" />
                             <h5 className='pt-3'>{prod.name}</h5>
-                            <p className='py-1'>256gb </p>
-                            <div className='flex justify-between items-center'>
+                            <p className='py-1'>{prod.description.slice(0,22)}</p>
+                            <div className='flex bottom-0 justify-between items-center'>
                                 <div>
-                                    <p className='text-[20px] mt-[10px]'>1099$</p>
+                                    <p className='text-[20px] mt-[10px]'>{prod.price}$</p>
                                 </div>
                                 <div className=''>
                                     {isButton === prod._id ?
-                                        <button className='bg-[#8633E0] py-1 px-2 text-[#fff] rounded-[6px] '>
+                                        <button 
+                                        onClick={() => {
+                                            addProduct(prod)
+                                        }}
+                                        className='bg-[#8633E0] py-1 px-2 text-[#fff] rounded-[6px] '>
                                             Add to Cart
                                         </button>
                                         :

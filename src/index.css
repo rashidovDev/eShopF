@@ -28,6 +28,18 @@ body{
     margin: 0;
   }
 
+    /* BASKET */
+
+    .basket-left-margin {
+      transition: margin-right 500ms ease-in-out;
+      margin-right: -320px;
+    }
+  
+    .basket-right-margin {
+      transition: margin-right 500ms ease-in-out;
+      margin: 0;
+    }
+
   /* LOADER */
 
   .loader{

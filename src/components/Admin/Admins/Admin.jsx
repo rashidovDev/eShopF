@@ -35,7 +35,7 @@ const Admin = () => {
 // }
 
 async function updateRole(id){
-  await PUT("/auth/users/" + id, {} )
+  await PUT("/auth/user-role/" + id, {} )
   getItems()
 }
 

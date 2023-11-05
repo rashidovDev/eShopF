@@ -29,7 +29,7 @@ const AdminAddUpdate = () => {
   };
 
 async function addAdmin(id) {
-  await PUT('/auth/users/' + id)
+  await PUT('/auth/user-role/' + id)
   getItems()
 }
 

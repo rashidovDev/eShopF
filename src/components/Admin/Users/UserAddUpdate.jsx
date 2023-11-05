@@ -22,35 +22,31 @@ const UserAddUpdate = () => {
     username: '',
     email: '',
     password: '',
-    country: ''
+    country: '',
+    region : ''
   });
 
-  const [country, setCountry] = useState([])
+  const [country, setCountry] = useState('')
+  const [region, setRegion] = useState('')
+  const [selectedCountry, setSelectedCountry] = useState('Afghanistan')
   const [imageUrl, setImageUrl] = useState('')
-
+  
   async function getCountries() {
-    const response = await GET('/countries')
+    const response = await GET('/country-helper')
     setCountry(response)
+    getRegions()
+  }
+
+ console.log("UZ",selectedCountry)
+  async function getRegions() {
+    if(selectedCountry){}
+    const response = await GET(`/region-helper?country=${selectedCountry}`)
+    setRegion(response)
   }
 
   async function getUser(){
     const currentUser = JSON.parse(localStorage.getItem("admin_user"))
       setUser(currentUser.data.user)
-    }
-
-  console.log(country)
-
-  async function createUser(data) {
-    let response
-    if (id) {
-      response = await PUT("/auth/users/" + id, data)
-    } else {
-      response = await POST("/auth/registration", data)
-      dispatch(getId(response.id))
-    }
-    if (response) {
-      navigate('/admin/user')
-    }
   }
 
   async function getUser() {
@@ -61,8 +57,21 @@ const UserAddUpdate = () => {
     setImageUrl(response.avatar)
   }
 
+
+  async function createUser(data) {
+    let response
+    if (id) {
+      response = await PUT("/auth/users/" + id, data)
+    } else {
+      response = await POST("/auth/registration", data)
+    }
+    if (response) {
+      navigate('/admin/user')
+    }
+  }
+
   async function fileUpload() {
-    await FILE(`/auth/avatar/${id ? id : userId}`, file)
+    await FILE(`/auth/avatar/${id}`, file)
     navigate("/admin/user")
     dispatch(hideModal())
   }
@@ -74,15 +83,17 @@ const UserAddUpdate = () => {
   }
 
   async function getData() {
-    await getCountries()
     if (id) {
       await getUser()
     }
+
   }
 
   useEffect(() => {
     getData()
-  }, [])
+    getCountries()
+    getRegions()
+  }, [selectedCountry])
 
   return (
     <>
@@ -120,18 +131,31 @@ const UserAddUpdate = () => {
                     className='border ml-1 border-sky-500 p-2 w-[300px] outline-[#5C3EBA]' />
                 </div>
                 {country && (
-                  <div className="my-[40px]">
+                
+                   <div className="my-[40px]">
                     <label htmlFor="country" className='w-[70px] ml-2'>Country</label>
-                    <select {...register("country", { required: true })} id="country" name="country" className='border ml-1 border-sky-500 p-2 w-[300px] outline-[#5C3EBA]'>
+                    <select  {...register("country", { required: true })} value={selectedCountry} onChange={(e) => setSelectedCountry(e.target.value)}
+                     id="country" name="country" className='border ml-1 border-sky-500 p-2 w-[300px] outline-[#5C3EBA]'>
                       {country.map((cnt, idx) => {
+                        return (
+                          <option key={idx + 1} value={cnt.countryName}>{cnt.countryName}</option>
+                        )
+                      })}
+                    </select>
+                  </div>
+                  )}
+                  
+                   { region && <div className="my-[40px]">
+                    <label htmlFor="region" className='w-[70px] ml-2'>Region</label>
+                    <select  {...register("region", { required: true })} 
+                     id="region" name="region" className='border ml-1 border-sky-500 p-2 w-[300px] outline-[#5C3EBA]'>
+                      {region.regions.map((cnt, idx) => {
                         return (
                           <option key={idx + 1} value={cnt.name}>{cnt.name}</option>
                         )
                       })}
                     </select>
-                  </div>
-                )}
-
+                  </div> } 
                 <div className='absolute bottom-10 md:left-[135px] flex text-[#fff]  text-[19px]'>
                   <Link to="/admin/user" className='no-underline text-[#fff]'>
                     <button className='mr-5 p-[6px] underline-none w-[130px] flex items-center text-center justify-center rounded-[6px] bg-[red]'>
@@ -146,7 +170,9 @@ const UserAddUpdate = () => {
             </div>
           </div>
           <div className='w-1/2'>
-            <div className='md:ml-16 mb-2 flex-column'>
+              {id && (
+
+              <div className='md:ml-16 mb-2 flex-column'>
               {imageUrl ?
                 <img className='rounded-full w-[250px] h-[250px] object-cover mb-3' src={`http://localhost:5000/${imageUrl}`} alt="" />
                 : <FaUserCircle className='text-[170px] ml-[35px] my-2' />
@@ -169,6 +195,8 @@ const UserAddUpdate = () => {
 
               </div>
             </div>
+              )}
+          
           </div>
         </div>
       </div>

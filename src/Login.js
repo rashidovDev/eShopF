@@ -34,7 +34,10 @@ const Login = () => {
                      localStorage.setItem('admin_user', JSON.stringify(data))
                      navigate("/admin/main")
                  }else if(data.data.user.roles[i] === "user"){
-                    navigate("/")
+                    localStorage.setItem('user_token', response.data.token)
+                    localStorage.setItem("user_tokenTime", JSON.stringify(new Date().getTime()))
+                    localStorage.setItem('user', JSON.stringify(data))
+                   navigate("/")
                  }else {
                     navigate("/")
                  }

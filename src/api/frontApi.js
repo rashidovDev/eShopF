@@ -61,7 +61,7 @@ export async function GET(URL) {
     // store.dispatch(showLoader())
     // await checkToken()
 	const response = await axios.get(`${baseURL}${URL}`, 
-    { headers: { Authorization: 'Bearer ' + localStorage.getItem('admin_access_token') } }
+    // { headers: { Authorization: 'Bearer ' + localStorage.getItem('admin_access_token') } }
     )
         store.dispatch(hideLoader())
         return response.data

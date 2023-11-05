@@ -24,13 +24,14 @@ import About from './components/Front/About'
 import { useLocation } from 'react-router-dom';
 import Footer from './components/Front/Footer'
 import Registration from './components/Front/Registration'
+import Basket from './components/Front/Basket'
 
 const App = () => {
 
   const loader = useSelector(state => state.loader.loader)
 
   return (
-    <>
+    <div className='relative'>
       <ToastContainer
         position="bottom-left"
         autoClose={2000}
@@ -55,14 +56,14 @@ const App = () => {
         </div>
       }
 
-
-
+    <Basket/>
     {/* FRONT */}
       <Routes>
         <Route
           path="/"
           element={
             <>
+             
               <Navbar />
               <Header />
               <Footer />
@@ -98,7 +99,7 @@ const App = () => {
           <Route path='product/update/:id' exact element={<ProductAddUpdate />} />
         </Route>
       </Routes>
-    </>
+    </div>
   )
 }
 

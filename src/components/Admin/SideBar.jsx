@@ -1,18 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
-import { Home, Users, Briefcase,ShoppingBag, ChevronDown,
-Menu, User, Truck, Edit, Settings, LogOut, Send, XCircle, Shield } from 'react-feather';
-import { Image } from 'react-bootstrap';
-import Order from './Orders/Order';
-import Paginate from './Paginate';
-import { useDispatch, useSelector } from 'react-redux';
-import { Circle } from 'react-feather';
-import { GET } from '../../api/adminApi';
-import { logoutUser } from '../../store/slices/userSlice';
-import { hideLoader, showLoader } from '../../store/slices/loaderSlice';
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { Home, ShoppingBag, ChevronDown,
+Menu, User, Truck,LogOut, Send, XCircle, Shield } from 'react-feather';
+import { useDispatch} from 'react-redux';
+import { logoutAdminUser} from '../../store/slices/userSlice';
+
 
 const Sidebar = ({ children }) => {
-    const location = useLocation();
 	let navigate = useNavigate();
 	const [user, setUser] = useState()
 	const [profile, setProfile] = useState(false)
@@ -107,7 +101,7 @@ const Sidebar = ({ children }) => {
 	const dispatch = useDispatch()
 
 	async function logout(){
-		dispatch(logoutUser())
+		dispatch(logoutAdminUser())
 		navigate("/admin/login")
 	}
 
